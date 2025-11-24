@@ -33,4 +33,4 @@ jobs:
 
       - name: Build solution
         working-directory: "AsyncRAT-C#"
-        run: msbuild AsyncRAT-Sharp.sln /p:Configuration=Release /verbosity:minimal
+        run: msbuild AsyncRAT-Sharp.sln /p:Configuration=Release /p:FrameworkPathOverride="$env:FRAMEWORK40_PATH" /verbosity:minimal
