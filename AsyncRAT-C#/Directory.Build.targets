@@ -3,6 +3,8 @@
   <Target Name="SetFramework40ReferencePath" BeforeTargets="GetReferenceAssemblyPaths" Condition="'$(FRAMEWORK40_PATH)' != '' and '$(TargetFrameworkVersion)' == 'v4.0'">
     <PropertyGroup>
       <FrameworkPathOverride>$(FRAMEWORK40_PATH)</FrameworkPathOverride>
+      <TargetFrameworkDirectory>$(FRAMEWORK40_PATH)</TargetFrameworkDirectory>
+      <TargetFrameworkRootPath>$(FRAMEWORK40_PATH)\..\</TargetFrameworkRootPath>
     </PropertyGroup>
     <Message Importance="High" Text="Using FRAMEWORK40_PATH=$(FrameworkPathOverride) for $(MSBuildProjectName)" />
   </Target>
