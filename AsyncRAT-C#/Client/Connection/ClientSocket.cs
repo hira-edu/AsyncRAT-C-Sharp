@@ -33,6 +33,8 @@ namespace Client.Connection
         public static int Interval { get; set; } //ping value
         public static bool ActivatePong { get; set; }
         private const int HeartbeatTimeoutMs = 15000;
+        private const SslProtocols Tls11Protocol = (SslProtocols)0x00000300;
+        private const SslProtocols Tls12Protocol = (SslProtocols)0x00000C00;
 
 
         public static void InitializeClient() //Connect & reconnect
@@ -80,7 +82,8 @@ namespace Client.Connection
                     Debug.WriteLine("Connected!");
                     IsConnected = true;
                     SslClient = new SslStream(new NetworkStream(TcpClient, true), false, ValidateServerCertificate);
-                    SslClient.AuthenticateAsClient(TcpClient.RemoteEndPoint.ToString().Split(':')[0], null, SslProtocols.Tls12 | SslProtocols.Tls11, true);
+                    var sslProtocols = SslProtocols.Tls | Tls11Protocol | Tls12Protocol;
+                    SslClient.AuthenticateAsClient(TcpClient.RemoteEndPoint.ToString().Split(':')[0], null, sslProtocols, true);
                     HeaderSize = 4;
                     Buffer = new byte[HeaderSize];
                     Offset = 0;
