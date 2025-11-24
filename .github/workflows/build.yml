@@ -29,7 +29,7 @@ jobs:
               Copy-Item -Path (Join-Path $frameworkPath '*') -Destination $machineFrameworkPath -Recurse -Force -ErrorAction Stop
               $frameworkPath = $machineFrameworkPath
             } catch {
-              Write-Warning "Failed to copy reference assemblies to $machineFrameworkPath: $_"
+              Write-Warning ("Failed to copy reference assemblies to {0}: {1}" -f $machineFrameworkPath, $_)
             }
           }
 
