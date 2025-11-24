@@ -5,6 +5,7 @@
       <FrameworkPathOverride>$(FRAMEWORK40_PATH)</FrameworkPathOverride>
       <TargetFrameworkDirectory>$(FRAMEWORK40_PATH)</TargetFrameworkDirectory>
       <TargetFrameworkRootPath>$(FRAMEWORK40_PATH)\..\</TargetFrameworkRootPath>
+      <BypassFrameworkInstallCheck>true</BypassFrameworkInstallCheck>
     </PropertyGroup>
     <Message Importance="High" Text="Using FRAMEWORK40_PATH=$(FrameworkPathOverride) for $(MSBuildProjectName)" />
   </Target>
