@@ -23,6 +23,14 @@ jobs:
           $packagePath = Get-ChildItem -Path $packagesRoot -Directory -Filter "Microsoft.NETFramework.ReferenceAssemblies.net40*" | Sort-Object Name -Descending | Select-Object -First 1
           if ($packagePath) {
             $frameworkPath = Join-Path $packagePath.FullName "build/.NETFramework/v4.0"
+            $machineFrameworkPath = "C:\\Program Files (x86)\\Reference Assemblies\\Microsoft\\Framework\\.NETFramework\\v4.0"
+            try {
+              New-Item -ItemType Directory -Path $machineFrameworkPath -Force -ErrorAction Stop | Out-Null
+              Copy-Item -Path (Join-Path $frameworkPath '*') -Destination $machineFrameworkPath -Recurse -Force -ErrorAction Stop
+              $frameworkPath = $machineFrameworkPath
+            } catch {
+              Write-Warning "Failed to copy reference assemblies to $machineFrameworkPath: $_"
+            }
           }
 
           if (-not $frameworkPath -or -not (Test-Path $frameworkPath)) {
@@ -40,7 +48,7 @@ jobs:
           if (-not (Test-Path $nlpSource)) {
             $nlpSource = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
           }
-          if ($env:FRAMEWORK40_PATH -like "$env:LOCALAPPDATA*") {
+          if ($env:FRAMEWORK40_PATH -like "$env:LOCALAPPDATA*" -or $env:FRAMEWORK40_PATH -like "C:\\Program Files*") {
             New-Item -ItemType Directory -Path "$env:FRAMEWORK40_PATH" -Force | Out-Null
             foreach ($file in @("normidna.nlp", "normnfc.nlp", "normnfd.nlp", "normnfkc.nlp", "normnfkd.nlp")) {
               Copy-Item -Path (Join-Path $nlpSource $file) -Destination (Join-Path $env:FRAMEWORK40_PATH $file) -Force
