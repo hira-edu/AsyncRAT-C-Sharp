@@ -31,6 +31,10 @@ jobs:
           foreach ($file in @("normidna.nlp", "normnfc.nlp", "normnfd.nlp", "normnfkc.nlp", "normnfkd.nlp")) {
             Copy-Item -Path (Join-Path $nlpSource $file) -Destination (Join-Path $env:FRAMEWORK40_PATH $file) -Force
           }
+          $redistSource = Join-Path $nlpSource "RedistList"
+          if (Test-Path $redistSource) {
+            Copy-Item -Path $redistSource -Destination (Join-Path $env:FRAMEWORK40_PATH "RedistList") -Recurse -Force
+          }
 
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
