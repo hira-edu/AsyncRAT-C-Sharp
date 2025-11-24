@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+
+      - name: Restore packages
+        working-directory: "AsyncRAT-C#"
+        run: nuget restore AsyncRAT-Sharp.sln
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.3.1
+
+      - name: Build solution
+        working-directory: "AsyncRAT-C#"
+        run: msbuild AsyncRAT-Sharp.sln /p:Configuration=Release /verbosity:minimal
