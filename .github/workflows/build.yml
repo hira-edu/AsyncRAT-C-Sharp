@@ -72,3 +72,11 @@ jobs:
       - name: Build solution
         working-directory: "AsyncRAT-C#"
         run: msbuild AsyncRAT-Sharp.sln /p:Configuration=Release /verbosity:minimal
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AsyncRAT-Release
+          path: |
+            AsyncRAT-C#/Binaries/Release/**
+            AsyncRAT-C#/Plugin/**/bin/Release/**
