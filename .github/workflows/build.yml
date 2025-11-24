@@ -17,12 +17,22 @@ jobs:
 
       - name: Install .NET Framework 4.0 reference assemblies
         run: |
-          nuget install Microsoft.NETFramework.ReferenceAssemblies.net40 -Version 1.0.3 -OutputDirectory "$env:LOCALAPPDATA\\Temp\\reference-assemblies"
-          $runtimePath = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
-          if (-not (Test-Path $runtimePath)) {
-            $runtimePath = "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319"
+          $packagesRoot = Join-Path $env:LOCALAPPDATA "Temp\\reference-assemblies"
+          nuget install Microsoft.NETFramework.ReferenceAssemblies.net40 -Version 1.0.3 -OutputDirectory $packagesRoot
+
+          $packagePath = Get-ChildItem -Path $packagesRoot -Directory -Filter "Microsoft.NETFramework.ReferenceAssemblies.net40*" | Sort-Object Name -Descending | Select-Object -First 1
+          if ($packagePath) {
+            $frameworkPath = Join-Path $packagePath.FullName "build/.NETFramework/v4.0"
           }
-          echo "FRAMEWORK40_PATH=$runtimePath" >> $env:GITHUB_ENV
+
+          if (-not $frameworkPath -or -not (Test-Path $frameworkPath)) {
+            $frameworkPath = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
+            if (-not (Test-Path $frameworkPath)) {
+              $frameworkPath = "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319"
+            }
+          }
+
+          echo "FRAMEWORK40_PATH=$frameworkPath" >> $env:GITHUB_ENV
 
       - name: Copy .NET Framework 4.0 NLP data
         run: |
@@ -30,8 +40,8 @@ jobs:
           if (-not (Test-Path $nlpSource)) {
             $nlpSource = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
           }
-          New-Item -ItemType Directory -Path "$env:FRAMEWORK40_PATH" -Force | Out-Null
-          if ($env:FRAMEWORK40_PATH -ne $nlpSource) {
+          if ($env:FRAMEWORK40_PATH -like "$env:LOCALAPPDATA*") {
+            New-Item -ItemType Directory -Path "$env:FRAMEWORK40_PATH" -Force | Out-Null
             foreach ($file in @("normidna.nlp", "normnfc.nlp", "normnfd.nlp", "normnfkc.nlp", "normnfkd.nlp")) {
               Copy-Item -Path (Join-Path $nlpSource $file) -Destination (Join-Path $env:FRAMEWORK40_PATH $file) -Force
             }
