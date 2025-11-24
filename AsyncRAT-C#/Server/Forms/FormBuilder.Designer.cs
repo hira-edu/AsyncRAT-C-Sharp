@@ -44,6 +44,9 @@ namespace Server.Forms
             this.label6 = new System.Windows.Forms.Label();
             this.textPort = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.lblPortStatus = new System.Windows.Forms.Label();
+            this.lblHostStatus = new System.Windows.Forms.Label();
+            this.lblPastebinStatus = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.comboBoxFolder = new System.Windows.Forms.ComboBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -95,6 +98,8 @@ namespace Server.Forms
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.chkObfu = new System.Windows.Forms.CheckBox();
             this.btnBuild = new System.Windows.Forms.Button();
+            this.lblCertificateStatus = new System.Windows.Forms.Label();
+            this.lblStubStatus = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -114,6 +119,9 @@ namespace Server.Forms
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblPastebinStatus);
+            this.groupBox1.Controls.Add(this.lblPortStatus);
+            this.groupBox1.Controls.Add(this.lblHostStatus);
             this.groupBox1.Controls.Add(this.btnRemoveIP);
             this.groupBox1.Controls.Add(this.btnAddIP);
             this.groupBox1.Controls.Add(this.listBoxIP);
@@ -229,7 +237,7 @@ namespace Server.Forms
             this.chkPastebin.Size = new System.Drawing.Size(89, 17);
             this.chkPastebin.TabIndex = 9;
             this.chkPastebin.Text = "Use Pastebin";
-            this.toolTip1.SetToolTip(this.chkPastebin, "IP:PORT .. Example 127.0.0.1:6606");
+            this.toolTip1.SetToolTip(this.chkPastebin, "Raw Pastebin (HTTP/HTTPS) returning host:port1:port2");
             this.chkPastebin.UseVisualStyleBackColor = true;
             this.chkPastebin.CheckedChanged += new System.EventHandler(this.CheckBox2_CheckedChanged);
             // 
@@ -243,7 +251,8 @@ namespace Server.Forms
             this.txtPastebin.Size = new System.Drawing.Size(182, 20);
             this.txtPastebin.TabIndex = 8;
             this.txtPastebin.Text = global::Server.Properties.Settings.Default.Pastebin;
-            this.toolTip1.SetToolTip(this.txtPastebin, "IP:PORT .. Example 127.0.0.1:6606");
+            this.toolTip1.SetToolTip(this.txtPastebin, "Raw Pastebin URL that returns host:port1:port2 (HTTP/HTTPS only)");
+            this.txtPastebin.TextChanged += new System.EventHandler(this.TxtPastebin_TextChanged);
             // 
             // label6
             // 
@@ -262,6 +271,7 @@ namespace Server.Forms
             this.textPort.Name = "textPort";
             this.textPort.Size = new System.Drawing.Size(109, 20);
             this.textPort.TabIndex = 6;
+            this.textPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextPort_KeyPress);
             // 
             // label2
             // 
@@ -272,6 +282,39 @@ namespace Server.Forms
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "Port";
+            // 
+            // lblPortStatus
+            // 
+            this.lblPortStatus.AutoSize = true;
+            this.lblPortStatus.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblPortStatus.Location = new System.Drawing.Point(205, 123);
+            this.lblPortStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPortStatus.Name = "lblPortStatus";
+            this.lblPortStatus.Size = new System.Drawing.Size(98, 13);
+            this.lblPortStatus.TabIndex = 19;
+            this.lblPortStatus.Text = "Add at least one port";
+            // 
+            // lblHostStatus
+            // 
+            this.lblHostStatus.AutoSize = true;
+            this.lblHostStatus.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblHostStatus.Location = new System.Drawing.Point(12, 123);
+            this.lblHostStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblHostStatus.Name = "lblHostStatus";
+            this.lblHostStatus.Size = new System.Drawing.Size(100, 13);
+            this.lblHostStatus.TabIndex = 20;
+            this.lblHostStatus.Text = "Add at least one host";
+            // 
+            // lblPastebinStatus
+            // 
+            this.lblPastebinStatus.AutoSize = true;
+            this.lblPastebinStatus.ForeColor = System.Drawing.Color.Gray;
+            this.lblPastebinStatus.Location = new System.Drawing.Point(9, 255);
+            this.lblPastebinStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPastebinStatus.Name = "lblPastebinStatus";
+            this.lblPastebinStatus.Size = new System.Drawing.Size(152, 13);
+            this.lblPastebinStatus.TabIndex = 21;
+            this.lblPastebinStatus.Text = "Pastebin: disabled (manual build)";
             // 
             // groupBox2
             // 
@@ -488,6 +531,7 @@ namespace Server.Forms
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(405, 323);
             this.tabControl1.TabIndex = 10;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
             // tabPage1
             // 
@@ -844,6 +888,8 @@ namespace Server.Forms
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.lblStubStatus);
+            this.tabPage6.Controls.Add(this.lblCertificateStatus);
             this.tabPage6.Controls.Add(this.chkObfu);
             this.tabPage6.Controls.Add(this.btnBuild);
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
@@ -854,6 +900,28 @@ namespace Server.Forms
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Build";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // lblCertificateStatus
+            // 
+            this.lblCertificateStatus.AutoSize = true;
+            this.lblCertificateStatus.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblCertificateStatus.Location = new System.Drawing.Point(12, 18);
+            this.lblCertificateStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblCertificateStatus.Name = "lblCertificateStatus";
+            this.lblCertificateStatus.Size = new System.Drawing.Size(127, 13);
+            this.lblCertificateStatus.TabIndex = 3;
+            this.lblCertificateStatus.Text = "Certificate: checking...";
+            // 
+            // lblStubStatus
+            // 
+            this.lblStubStatus.AutoSize = true;
+            this.lblStubStatus.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblStubStatus.Location = new System.Drawing.Point(12, 41);
+            this.lblStubStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblStubStatus.Name = "lblStubStatus";
+            this.lblStubStatus.Size = new System.Drawing.Size(87, 13);
+            this.lblStubStatus.TabIndex = 4;
+            this.lblStubStatus.Text = "Stub: checking...";
             // 
             // chkObfu
             // 
@@ -980,5 +1048,10 @@ namespace Server.Forms
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox txtGroup;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lblPortStatus;
+        private System.Windows.Forms.Label lblHostStatus;
+        private System.Windows.Forms.Label lblPastebinStatus;
+        private System.Windows.Forms.Label lblCertificateStatus;
+        private System.Windows.Forms.Label lblStubStatus;
     }
 }
