@@ -9,14 +9,17 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install .NET Framework 4.0 targeting pack
-        run: choco install netfx-4.0.3-devpack -y --no-progress
+      - name: Install .NET Framework 4.0 reference assemblies
+        run: |
+          nuget install Microsoft.NETFramework.ReferenceAssemblies.net40 -Version 1.0.3 -OutputDirectory "$env:LOCALAPPDATA\\Temp\\reference-assemblies"
+          $refPath = Join-Path $env:LOCALAPPDATA "Temp\\reference-assemblies\\Microsoft.NETFramework.ReferenceAssemblies.net40.1.0.3\\build\\.NETFramework\\v4.0"
+          echo "FRAMEWORK40_PATH=$refPath" >> $env:GITHUB_ENV
 
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
