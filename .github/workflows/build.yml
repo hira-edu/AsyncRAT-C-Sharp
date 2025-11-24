@@ -21,6 +21,17 @@ jobs:
           $refPath = Join-Path $env:LOCALAPPDATA "Temp\\reference-assemblies\\Microsoft.NETFramework.ReferenceAssemblies.net40.1.0.3\\build\\.NETFramework\\v4.0"
           echo "FRAMEWORK40_PATH=$refPath" >> $env:GITHUB_ENV
 
+      - name: Copy .NET Framework 4.0 NLP data
+        run: |
+          $nlpSource = "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319"
+          if (-not (Test-Path $nlpSource)) {
+            $nlpSource = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
+          }
+          New-Item -ItemType Directory -Path "$env:FRAMEWORK40_PATH" -Force | Out-Null
+          foreach ($file in @("normidna.nlp", "normnfc.nlp", "normnfd.nlp", "normnfkc.nlp", "normnfkd.nlp")) {
+            Copy-Item -Path (Join-Path $nlpSource $file) -Destination (Join-Path $env:FRAMEWORK40_PATH $file) -Force
+          }
+
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
 
@@ -33,4 +44,4 @@ jobs:
 
       - name: Build solution
         working-directory: "AsyncRAT-C#"
-        run: msbuild AsyncRAT-Sharp.sln /p:Configuration=Release /p:FrameworkPathOverride="$env:FRAMEWORK40_PATH" /verbosity:minimal
+        run: msbuild AsyncRAT-Sharp.sln /p:Configuration=Release /verbosity:minimal
