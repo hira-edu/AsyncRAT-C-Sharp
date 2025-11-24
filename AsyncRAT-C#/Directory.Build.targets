@@ -1,6 +1,8 @@
 <Project>
   <!-- Use CI-provided reference assemblies for .NET Framework 4.0 builds -->
-  <PropertyGroup Condition="'$(FRAMEWORK40_PATH)' != '' and '$(TargetFrameworkVersion)' == 'v4.0'">
-    <FrameworkPathOverride>$(FRAMEWORK40_PATH)</FrameworkPathOverride>
-  </PropertyGroup>
+  <Target Name="SetFramework40ReferencePath" BeforeTargets="GetReferenceAssemblyPaths" Condition="'$(FRAMEWORK40_PATH)' != '' and '$(TargetFrameworkVersion)' == 'v4.0'">
+    <PropertyGroup>
+      <FrameworkPathOverride>$(FRAMEWORK40_PATH)</FrameworkPathOverride>
+    </PropertyGroup>
+  </Target>
 </Project>
