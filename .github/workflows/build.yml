@@ -15,6 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install .NET Framework 4.0 targeting pack
+        run: choco install netfx-4.0.3-devpack -y
+
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
 
