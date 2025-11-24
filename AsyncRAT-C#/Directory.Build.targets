@@ -4,5 +4,6 @@
     <PropertyGroup>
       <FrameworkPathOverride>$(FRAMEWORK40_PATH)</FrameworkPathOverride>
     </PropertyGroup>
+    <Message Importance="High" Text="Using FRAMEWORK40_PATH=$(FrameworkPathOverride) for $(MSBuildProjectName)" />
   </Target>
 </Project>
