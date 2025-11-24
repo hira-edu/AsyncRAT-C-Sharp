@@ -18,9 +18,9 @@ jobs:
       - name: Install .NET Framework 4.0 reference assemblies
         run: |
           nuget install Microsoft.NETFramework.ReferenceAssemblies.net40 -Version 1.0.3 -OutputDirectory "$env:LOCALAPPDATA\\Temp\\reference-assemblies"
-          $runtimePath = "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319"
+          $runtimePath = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
           if (-not (Test-Path $runtimePath)) {
-            $runtimePath = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319"
+            $runtimePath = "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319"
           }
           echo "FRAMEWORK40_PATH=$runtimePath" >> $env:GITHUB_ENV
 
